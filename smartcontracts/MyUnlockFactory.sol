@@ -8,6 +8,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /**
  * @title MyUnlockFactory Contract
  * @author juanlysander
+ * @dev This contract serves as a factory for creating new locks using the Unlock protocol. It provides
+ *      functionalities for setting default metadata, fee structures, and lock symbols. This simplifies
+ *      the process of creating locks that are consistent with the platform's style, enabling easier
+ *      identification and filtering. For more details on the Unlock protocol, visit: https://unlock-protocol.com/
  */
 
 contract MyUnlockFactory is Ownable(msg.sender) {
