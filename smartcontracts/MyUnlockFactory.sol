@@ -29,7 +29,6 @@ contract MyUnlockFactory is Ownable(msg.sender) {
      * @dev Transfers the ownership of the contract to a new address. Can only be called by the current owner.
      * @notice This function will revert if the new owner is the zero address.
      * @param _newOwner The address of the new owner.
-     * ~~~~~~Checked~~~~~~
      */
     function transferOwnership(address _newOwner) public override onlyOwner {
         require(_newOwner != address(0), "Ownable: new owner is the zero address");
@@ -39,7 +38,6 @@ contract MyUnlockFactory is Ownable(msg.sender) {
     /**
      * @dev Sets a new platform address. Only callable by the contract owner.
      * @param _platformAddress The address to set as the new platform address.
-     * ~~~~~~Checked~~~~~~
      */
     function setPlatformAddress(address _platformAddress) public onlyOwner {
         platformAddress = _platformAddress;
@@ -48,7 +46,6 @@ contract MyUnlockFactory is Ownable(msg.sender) {
     /**
      * @dev Sets the basis points (bps). Only callable by the contract owner.
      * @param _bps The basis points to be set.
-     * ~~~~~~Checked~~~~~~
      */
     function setBps(uint16 _bps) public onlyOwner {
         bps = _bps;
@@ -88,10 +85,11 @@ contract MyUnlockFactory is Ownable(msg.sender) {
         address newLockAddress = unlock.createUpgradeableLockAtVersion(initData, 12);
         IPublicLockV13(newLockAddress).updateRefundPenalty(0, 10000);
         IPublicLockV13(newLockAddress).addLockManager(_userAddress);
-        IPublicLockV13(newLockAddress).renounceLockManager();
         IPublicLockV13(newLockAddress).setReferrerFee(platformAddress, bps);
         IPublicLockV13(newLockAddress).setLockMetadata(_lockName, LOCK_SYMBOL, _baseLockURI);
 
+        // Renouncing yourself from LockManager role (optional)
+        IPublicLockV13(newLockAddress).renounceLockManager();
         return newLockAddress;
     }
 }
