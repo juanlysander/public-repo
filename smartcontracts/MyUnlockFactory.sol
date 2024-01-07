@@ -18,7 +18,7 @@ contract MyUnlockFactory is Ownable(msg.sender) {
     address public unlockAddress;
     address public platformAddress;
     uint16 public bps = 375;
-    string public constant LOCK_SYMBOL = "GALA";
+    string public lockSymbol = "GALA";
 
     /**
      * @dev
@@ -74,9 +74,11 @@ contract MyUnlockFactory is Ownable(msg.sender) {
         string memory _lockName,
         string memory _baseLockURI
     ) external returns (address) {
+        IUnlockV12 unlock = IUnlockV12(unlockAddress);
+
         bytes memory initData = abi.encodeWithSignature(
             "initialize(address,uint256,address,uint256,uint256,string)",
-            _userAddress,
+            address(this),
             _expirationDuration,
             _tokenAddress,
             _keyPrice,
@@ -84,13 +86,11 @@ contract MyUnlockFactory is Ownable(msg.sender) {
             _lockName
         );
 
-        IUnlockV12 unlock = IUnlockV12(unlockAddress);
-
-        address newLockAddress = unlock.createUpgradeableLockAtVersion(initData, 12);
-        IPublicLockV13(newLockAddress).updateRefundPenalty(0, 10000);
-        IPublicLockV13(newLockAddress).addLockManager(_userAddress);
-        IPublicLockV13(newLockAddress).setReferrerFee(platformAddress, bps);
-        IPublicLockV13(newLockAddress).setLockMetadata(_lockName, LOCK_SYMBOL, _baseLockURI);
+        address newLockAddress = unlock.createUpgradeableLockAtVersion(initData, 12); // checked
+        IPublicLockV13(newLockAddress).updateRefundPenalty(0, 10000); // checked
+        IPublicLockV13(newLockAddress).addLockManager(_userAddress); // checked
+        IPublicLockV13(newLockAddress).setReferrerFee(platformAddress, bps); // failed, not applied
+        IPublicLockV13(newLockAddress).setLockMetadata(_lockName, lockSymbol, _baseLockURI); // lockName, lockSymbol checked, but baseLockURI not applied
 
         // Renouncing yourself from LockManager role (optional)
         IPublicLockV13(newLockAddress).renounceLockManager();
