@@ -63,7 +63,6 @@ contract MyUnlockFactory is Ownable(msg.sender) {
      * @param _keyPrice Price of one key.
      * @param _maxNumberOfKeys Maximum of active subscription.
      * @param _lockName Name of the lock.
-     * @param _baseLockURI Metadata Uri.
      */
     function deployNewLock(
         address _userAddress,
@@ -71,8 +70,7 @@ contract MyUnlockFactory is Ownable(msg.sender) {
         address _tokenAddress,
         uint256 _keyPrice,
         uint256 _maxNumberOfKeys,
-        string memory _lockName,
-        string memory _baseLockURI
+        string memory _lockName
     ) external returns (address) {
         IUnlockV12 unlock = IUnlockV12(unlockAddress);
 
@@ -89,8 +87,7 @@ contract MyUnlockFactory is Ownable(msg.sender) {
         address newLockAddress = unlock.createUpgradeableLockAtVersion(initData, 12); // checked
         IPublicLockV13(newLockAddress).updateRefundPenalty(0, 10000); // checked
         IPublicLockV13(newLockAddress).addLockManager(_userAddress); // checked
-        IPublicLockV13(newLockAddress).setReferrerFee(platformAddress, bps); // failed, not applied
-        IPublicLockV13(newLockAddress).setLockMetadata(_lockName, lockSymbol, _baseLockURI); // lockName, lockSymbol checked, but baseLockURI not applied
+        IPublicLockV13(newLockAddress).setReferrerFee(platformAddress, bps); // checked
 
         // Renouncing yourself from LockManager role (optional)
         IPublicLockV13(newLockAddress).renounceLockManager();
